@@ -1010,10 +1010,10 @@ const DATA = {
 
   /* ---------- 分享文案 ---------- */
   function shareText(id) {
+    /* 只复制结果本身，不加任何引导语；想加自己的号，把最后一行注释打开即可 */
     var txt = "我在仙侠世界的身份是「" + id.name + "」\n" +
-      id.tag + " · " + id.slogan + "\n" +
-      "你也来测一下？四十道生活题，不用懂仙侠，凭直觉选。";
-    if (SHOP_NAME) txt += "\n想测你的？小红书搜我：" + SHOP_NAME;
+      id.tag + " · " + id.slogan;
+    // if (SHOP_NAME) txt += "\n小红书搜我：" + SHOP_NAME;
     return txt;
   }
   function toast(msg) {
