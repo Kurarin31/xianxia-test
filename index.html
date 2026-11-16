@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>测一测 | 你在仙侠世界是什么身份</title>
+<meta name="description" content="四十道生活场景选择题，测出你在仙侠世界里的本命身份。不用懂仙侠，凭直觉作答。">
+<meta name="theme-color" content="#F2F4EE">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23F2F4EE'/%3E%3Crect x='6' y='6' width='52' height='52' rx='4' fill='none' stroke='%23A98540' stroke-width='3'/%3E%3Cpath d='M18 44 L27 28 L34 39 L40 31 L47 44 Z' fill='%231E3733'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500&display=swap">
+<style>
+:root{
+  --paper:#F2F4EE;
+  --paper-lift:#FCFCF7;
+  --ink:#1E3733;
+  --ink-2:#4A6662;
+  --ink-3:#7B8D88;
+  --jade:#3C7A6E;
+  --jade-soft:rgba(60,122,110,.10);
+  --gold:#A98540;
+  --gold-soft:#C9AE73;
+  --cloud:#94A29C;
+  --line:rgba(30,55,51,.14);
+  --line-2:rgba(30,55,51,.07);
+  --serif:"Noto Serif SC","Songti SC","STSong",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans);color:var(--ink);line-height:1.75;
+  background:
+    radial-gradient(760px 420px at 8% -8%, rgba(196,214,204,.34), transparent 62%),
+    radial-gradient(700px 400px at 102% 2%, rgba(233,220,186,.28), transparent 58%),
+    radial-gradient(900px 500px at 50% 112%, rgba(203,216,208,.18), transparent 60%),
+    var(--paper);
+  min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+
+/* ===== 装饰层：云、星点、山影（不影响正文） ===== */
+.scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.grain{
+  position:absolute;inset:0;opacity:.055;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.cloud{position:absolute;border-radius:50%;filter:blur(52px);opacity:.5}
+.cloud-a{width:520px;height:170px;left:-150px;top:10%;background:rgba(255,255,255,.8);animation:driftA 64s ease-in-out infinite}
+.cloud-b{width:420px;height:150px;right:-140px;top:44%;background:rgba(226,235,228,.8);animation:driftB 78s ease-in-out infinite}
+@keyframes driftA{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(26vw,10px,0)}}
+@keyframes driftB{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-22vw,-8px,0)}}
+.star{position:absolute;width:4px;height:4px;border-radius:50%;background:radial-gradient(circle,#CBAB6B 0%,rgba(203,171,107,0) 70%);animation:twinkle 5.5s ease-in-out infinite}
+.star:nth-child(1){left:14%;top:9%;animation-delay:-1s}
+.star:nth-child(2){left:82%;top:14%;animation-delay:-2.6s}
+.star:nth-child(3){left:30%;top:22%;animation-delay:-4.1s}
+.star:nth-child(4){left:68%;top:6%;animation-delay:-.4s}
+.star:nth-child(5){left:52%;top:30%;animation-delay:-3.2s}
+.star:nth-child(6){left:90%;top:36%;animation-delay:-1.8s;opacity:.4}
+@keyframes twinkle{0%,100%{opacity:.1;transform:scale(.7)}50%{opacity:.55;transform:scale(1)}}
+.mountains{position:absolute;left:0;right:0;bottom:0;height:min(22vh,170px);opacity:.42}
+.mountains svg{width:100%;height:100%;display:block}
+
+/* ===== 版面 ===== */
+.stage{
+  position:relative;z-index:1;max-width:720px;margin:0 auto;
+  padding:clamp(24px,5vh,56px) 26px;min-height:100vh;
+  display:flex;flex-direction:column;
+}
+.view{display:none}
+/* margin:auto 让内容在屏幕竖向居中；内容过长时自动回到顶部，不会顶出屏幕 */
+.view.is-active{display:block;margin-block:auto;animation:rise .5s cubic-bezier(.2,.75,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.seal{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border:1px solid var(--gold);color:var(--gold);
+  font-family:var(--serif);font-weight:700;font-size:19px;line-height:1;
+  letter-spacing:0;border-radius:2px;
+}
+.rule{height:1px;background:var(--line);margin:22px 0}
+.eyebrow{
+  font-size:11px;letter-spacing:.34em;color:var(--gold);font-weight:400;text-indent:.34em;
+}
+
+/* ===== 首页 ===== */
+.start-head{display:flex;justify-content:center}
+.start-title{margin-top:26px;text-align:center}
+.start-pre{
+  display:block;font-size:12px;letter-spacing:.42em;color:var(--gold);
+  text-indent:.42em;margin-bottom:18px;
+}
+.start-pre::before,.start-pre::after{content:none}
+.start-main{
+  display:block;font-family:var(--serif);font-weight:900;
+  font-size:clamp(30px,7.6vw,46px);line-height:1.34;color:var(--ink);
+  letter-spacing:.015em;
+}
+.start-lede{
+  max-width:510px;margin:26px auto 0;text-align:center;
+  font-size:14.5px;font-weight:300;line-height:2.05;color:var(--ink-2);
+}
+.start-lede span{display:block}
+.facts{
+  display:grid;grid-template-columns:1fr 1fr 1fr;margin:34px auto 0;max-width:430px;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.fact{padding:14px 6px;text-align:center;position:relative}
+.fact + .fact::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:1px;background:var(--line-2)}
+.fact b{display:block;font-family:var(--serif);font-weight:700;font-size:22px;color:var(--ink);line-height:1.3}
+.fact span{display:block;font-size:11.5px;color:var(--cloud);letter-spacing:.1em;margin-top:3px}
+.start-cta{margin-top:36px;text-align:center}
+.btn-ink{
+  appearance:none;cursor:pointer;font-family:var(--serif);font-weight:700;
+  background:var(--ink);color:#F6F7F1;border:1px solid var(--ink);border-radius:2px;
+  font-size:15.5px;letter-spacing:.22em;text-indent:.22em;
+  padding:16px 44px;box-shadow:0 10px 24px -14px rgba(30,55,51,.7);
+  transition:transform .16s ease,background .25s ease,box-shadow .25s ease,color .25s ease;
+}
+.btn-ink:hover{background:#274844;box-shadow:0 14px 30px -14px rgba(30,55,51,.8)}
+.btn-ink:active{transform:translateY(1px) scale(.985)}
+.btn-ink:disabled{opacity:.4;cursor:not-allowed}
+.start-hint{margin-top:16px;text-align:center;font-size:12px;color:var(--ink-3);font-weight:300}
+.start-foot{margin-top:44px;text-align:center;font-size:11.5px;color:var(--cloud);letter-spacing:.08em}
+
+/* ===== 答题页 ===== */
+.quiz-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.q-no{font-family:var(--serif);font-size:13px;letter-spacing:.18em;color:var(--gold);font-weight:700}
+.q-no b{font-size:16px;color:var(--gold)}
+.q-count{font-family:var(--serif);font-size:12.5px;color:var(--ink-3);letter-spacing:.1em}
+.meter{height:2px;background:var(--line);position:relative;overflow:visible}
+.meter-fill{position:absolute;left:0;top:0;height:2px;width:0;background:var(--ink);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.meter-dot{position:absolute;top:-2px;width:6px;height:6px;border-radius:50%;background:var(--gold);left:0;transition:left .45s cubic-bezier(.2,.8,.2,1)}
+.quiz-q{
+  font-family:var(--serif);font-weight:700;font-size:clamp(20px,4.5vw,26px);
+  line-height:1.6;color:var(--ink);margin:30px 0 8px;min-height:2.6em;
+}
+.opts{margin-top:10px;border-top:1px solid var(--line-2);min-height:274px}
+.opt{
+  position:relative;display:flex;align-items:flex-start;gap:14px;width:100%;
+  text-align:left;background:transparent;border:none;border-bottom:1px solid var(--line-2);
+  padding:17px 12px 17px 14px;cursor:pointer;font-family:var(--sans);
+  font-size:15px;font-weight:400;line-height:1.7;color:#3D5551;
+  transition:background .22s ease,color .2s ease,transform .18s ease;
+  overflow:hidden;-webkit-tap-highlight-color:transparent;
+}
+.opt:hover{background:rgba(60,122,110,.035);color:var(--ink)}
+.opt:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.opt .key{
+  flex:none;width:22px;font-family:var(--serif);font-size:14px;color:var(--cloud);
+  line-height:1.75;text-align:center;transition:color .2s ease
+}
+.opt .txt{flex:1;min-width:0}
+.opt:hover .key{color:var(--gold-soft)}
+.opt.is-on{background:rgba(60,122,110,.13);color:var(--ink);font-weight:500;transform:scale(.992)}
+.opt.is-on .key{color:var(--gold);font-weight:700}
+.opt.is-on::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--jade)}
+.ripple{
+  position:absolute;border-radius:50%;background:rgba(60,122,110,.20);
+  transform:scale(0);pointer-events:none;animation:rip .6s cubic-bezier(.2,.7,.3,1) forwards;
+}
+@keyframes rip{to{transform:scale(2.4);opacity:0}}
+.quiz-foot{display:flex;align-items:center;justify-content:space-between;margin-top:22px;gap:16px}
+.link{
+  appearance:none;background:none;border:none;cursor:pointer;font-family:var(--sans);
+  font-size:13px;color:var(--ink-3);padding:6px 0;transition:color .2s ease;letter-spacing:.04em
+}
+.link:hover{color:var(--gold)}
+.link:disabled{opacity:.35;cursor:not-allowed}
+.foot-hint{font-size:11.5px;color:var(--cloud);letter-spacing:.08em}
+.result-cta{margin-top:26px;text-align:center}
+.result-cta.is-hidden{display:none}
+
+/* ===== 结果页 ===== */
+.res-hero{
+  border:1px solid var(--line);border-top:2px solid var(--ink);
+  background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(252,252,247,.34));
+  padding:34px 30px 30px;text-align:center;position:relative;
+}
+.res-hero .seal{position:absolute;left:26px;top:26px}
+.res-eyebrow{font-size:11px;letter-spacing:.34em;color:var(--gold);text-indent:.34em}
+.res-name{
+  font-family:var(--serif);font-weight:900;font-size:clamp(34px,8.4vw,48px);
+  line-height:1.2;color:var(--ink);margin-top:14px;letter-spacing:.02em;
+}
+.res-tag{
+  display:inline-block;margin-top:10px;font-family:var(--serif);font-size:13.5px;
+  color:var(--gold);letter-spacing:.16em;text-indent:.16em;
+  padding:5px 12px;border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)
+}
+.res-slogan{
+  margin-top:22px;padding-left:16px;border-left:2px solid var(--gold-soft);
+  font-family:var(--serif);font-weight:500;font-size:clamp(15px,3.6vw,18px);
+  line-height:1.8;color:var(--ink-2);text-align:left;
+}
+.res-block{margin-top:34px}
+.res-h{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--serif);font-weight:700;font-size:15px;color:var(--ink);letter-spacing:.04em
+}
+.res-h::before{content:"";width:3px;height:15px;background:var(--gold);flex:none}
+.res-p{margin-top:12px;font-size:14.5px;font-weight:300;line-height:2.02;color:var(--ink-2);text-align:justify}
+.chart{margin-top:38px;padding-top:26px;border-top:1px solid var(--line)}
+.chart-h{font-family:var(--serif);font-weight:700;font-size:15px;color:var(--ink);letter-spacing:.04em}
+.chart-note{margin-top:6px;font-size:11.5px;color:var(--cloud)}
+.axis{display:grid;grid-template-columns:58px 1fr 58px;align-items:center;gap:12px;margin-top:18px}
+.axis-l{font-size:12.5px;text-align:right;color:var(--ink-3);transition:color .3s ease}
+.axis-r{font-size:12.5px;text-align:left;color:var(--ink-3);transition:color .3s ease}
+.axis-track{position:relative;height:3px;background:rgba(30,55,51,.10);border-radius:2px}
+.axis-mid{position:absolute;left:50%;top:-4px;width:1px;height:11px;background:rgba(30,55,51,.16)}
+.axis-fill{position:absolute;top:0;height:3px;width:0;border-radius:2px;background:var(--jade);transition:width .9s cubic-bezier(.2,.8,.2,1),left .9s cubic-bezier(.2,.8,.2,1)}
+.axis-dot{position:absolute;top:-3px;width:9px;height:9px;border-radius:50%;background:var(--jade);left:50%;transition:left .9s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 0 3px rgba(60,122,110,.12)}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:38px}
+.btn-fill{
+  appearance:none;cursor:pointer;font-family:var(--serif);font-weight:700;
+  background:var(--ink);color:#F6F7F1;border:1px solid var(--ink);border-radius:2px;
+  font-size:14.5px;letter-spacing:.14em;text-indent:.14em;padding:14px 10px;
+  transition:background .25s ease,transform .16s ease,box-shadow .2s ease;
+  box-shadow:0 10px 22px -16px rgba(30,55,51,.9)
+}
+.btn-fill:hover{background:#274844}
+.btn-fill:active{transform:translateY(1px) scale(.99)}
+.btn-line{
+  appearance:none;cursor:pointer;font-family:var(--serif);font-weight:700;border-radius:2px;
+  background:transparent;color:var(--gold);border:1px solid var(--gold-soft);
+  font-size:14.5px;letter-spacing:.14em;text-indent:.14em;padding:14px 10px;
+  transition:background .25s ease,border-color .25s ease,color .25s ease
+}
+.btn-line:hover{background:rgba(169,133,64,.08);border-color:var(--gold)}
+.res-foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:16px}
+.res-note{margin-top:20px;font-size:11.5px;color:var(--cloud);line-height:1.7}
+
+/* ===== 提示条 ===== */
+.toast{
+  position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(14px);
+  background:var(--ink);color:#F6F7F1;font-size:13px;letter-spacing:.06em;
+  padding:11px 22px;border-radius:2px;opacity:0;pointer-events:none;
+  transition:opacity .28s ease,transform .28s ease;z-index:30
+}
+.toast.is-on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:560px){
+  .stage{padding:22px 18px 40px}
+  .start-lede{font-size:14px;line-height:1.95}
+  .facts{max-width:none}
+  .res-hero{padding:30px 18px 26px}
+  .res-hero .seal{position:static;display:inline-flex;margin-bottom:14px}
+  .opt{font-size:14.5px;padding:16px 8px 16px 10px}
+  .axis{grid-template-columns:52px 1fr 52px;gap:9px}
+  .axis-l,.axis-r{font-size:12px}
+  .res-actions{grid-template-columns:1fr}
+  .mountains{height:180px}
+}
+@media (prefers-reduced-motion:reduce){
+  .cloud,.star,.view.is-active{animation:none}
+  .opt,.meter-fill,.meter-dot,.axis-fill,.axis-dot{transition:none}
+}
+</style>
+</head>
+<body>
+
+<!-- 装饰层 -->
+<div class="scene" aria-hidden="true">
+  <div class="grain"></div>
+  <div class="cloud cloud-a"></div>
+  <div class="cloud cloud-b"></div>
+  <span class="star"></span><span class="star"></span><span class="star"></span>
+  <span class="star"></span><span class="star"></span><span class="star"></span>
+  <div class="mountains">
+    <svg viewBox="0 0 1200 260" preserveAspectRatio="none">
+      <path d="M0 190 C120 130 180 150 260 118 C340 86 400 132 470 100 C540 68 600 118 660 92 C720 66 790 128 860 104 C930 80 1010 136 1080 112 C1130 96 1170 120 1200 108 L1200 260 L0 260 Z" fill="#1E3733" opacity=".055"/>
+      <path d="M0 224 C90 186 150 206 230 178 C310 150 360 194 440 170 C520 146 560 186 640 168 C720 150 780 196 860 176 C940 156 1000 200 1080 182 C1130 170 1170 186 1200 178 L1200 260 L0 260 Z" fill="#1E3733" opacity=".038"/>
+      <path d="M0 246 C140 224 240 238 340 226 C440 214 520 234 620 224 C720 214 820 236 920 228 C1020 220 1110 236 1200 230 L1200 260 L0 260 Z" fill="#3C7A6E" opacity=".05"/>
+    </svg>
+  </div>
+</div>
+
+<main class="stage">
+  <!-- ===== 首页 ===== -->
+  <section id="view-start" class="view is-active">
+    <div class="start-head"><span class="seal">仙</span></div>
+    <div class="start-title">
+      <span class="start-pre">测 一 测</span>
+      <span class="start-main">你在仙侠世界<br>是什么身份</span>
+    </div>
+    <p class="start-lede"><span>四十道题，都是你的日常：加班、约饭、走夜路。</span><span>不用懂仙侠，没看过修仙小说也能玩。</span><span>没有标准答案，凭第一反应选，别想太久。</span></p>
+    <div class="facts">
+      <div class="fact"><b>40</b><span>道生活题</span></div>
+      <div class="fact"><b>4</b><span>分钟</span></div>
+      <div class="fact"><b>16</b><span>种身份</span></div>
+    </div>
+    <div class="start-cta">
+      <button class="btn-ink" id="btn-start">落笔 · 起测</button>
+    </div>
+    <p class="start-hint">想太久反而不准。选那个你下意识会做的。</p>
+    <!-- 这里可以换成你的铺子署名，比如：@某某的测试铺 · 测完可反复重来 -->
+    <p class="start-foot">测完可反复重来 · 结果只由你的选择决定</p>
+  </section>
+  <!-- ===== 答题页 ===== -->
+  <section id="view-quiz" class="view">
+    <div class="quiz-head">
+      <div class="q-no">第 <b id="q-idx">一</b> 问</div>
+      <div class="q-count" id="q-count">01 / 40</div>
+    </div>
+    <div class="meter"><div class="meter-fill" id="meter-fill"></div><div class="meter-dot" id="meter-dot"></div></div>
+    <h2 class="quiz-q" id="q-text"></h2>
+    <div class="opts" id="q-opts"></div>
+    <div class="quiz-foot">
+      <button class="link" id="btn-prev">← 上一题</button>
+      <span class="foot-hint" id="foot-hint">凭直觉，别权衡</span>
+    </div>
+    <div class="result-cta is-hidden" id="result-cta">
+      <button class="btn-ink" id="btn-submit">结 签 · 看结果</button>
+    </div>
+  </section>
+  <!-- ===== 结果页 ===== -->
+  <section id="view-result" class="view">
+    <div class="res-hero">
+      <span class="seal">命</span>
+      <div class="res-eyebrow">你的本命仙侠身份</div>
+      <h2 class="res-name" id="r-name"></h2>
+      <div><span class="res-tag" id="r-tag"></span></div>
+      <blockquote class="res-slogan" id="r-slogan"></blockquote>
+    </div>
+
+    <div class="res-block">
+      <div class="res-h">为什么是你</div>
+      <p class="res-p" id="r-why"></p>
+    </div>
+
+    <div class="res-block">
+      <div class="res-h">隐藏特质 · 小彩蛋</div>
+      <p class="res-p" id="r-secret"></p>
+    </div>
+
+    <div class="chart">
+      <div class="chart-h">你的六维灵根</div>
+      <p class="chart-note">越靠哪一头，那一边的天赋就越明显</p>
+      <div id="r-chart"></div>
+    </div>
+
+    <div class="res-actions">
+      <button class="btn-fill" id="btn-copy">复制这段话</button>
+      <button class="btn-line" id="btn-share">发给朋友</button>
+    </div>
+
+    <div class="res-foot">
+      <button class="link" id="btn-retest">← 再测一次</button>
+      <span class="foot-hint">换个人来测，结果会完全不同</span>
+    </div>
+
+    <p class="res-note">这只关于你下意识的习惯，与仙侠设定无关。没有高下之分，每种身份都有自己的锋芒。</p>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+/* ================= 题库与身份数据 =================
+   八个隐藏维度（分数可为负）：
+   f 锋芒 / r 入世 / x 秩序 / g 共情 / d 独行 / q 求道 / j 精微 / y 远虑
+   每个选项的 p 字段：维度字母 + 正负分值，例如 "f+3 d+1"
+   ================================================= */
+const DATA = {
+  "axes": [
+    { "k": "f", "l": "锋芒", "r": "藏拙" },
+    { "k": "r", "l": "入世", "r": "出世" },
+    { "k": "x", "l": "秩序", "r": "随心" },
+    { "k": "g", "l": "共情", "r": "冷静" },
+    { "k": "d", "l": "独行", "r": "结伴" },
+    { "k": "q", "l": "求道", "r": "护人" },
+    { "k": "j", "l": "精微", "r": "写意" },
+    { "k": "y", "l": "远虑", "r": "当下" }
+  ],
+  "questions": [
+    { "t": "开会时你的提案被人当场打断、否掉，你会——", "o": [
+      { "t": "把话接回来，一条条把他的问题拆开答。场面冷一点也认。", "p": "f+3 d+1" },
+      { "t": "不争这一句。会后把数据补上，再发一遍。", "p": "f+1 x+1" },
+      { "t": "先顺着他说“有道理”，把气氛兜住，回头自己再改。", "p": "f-1 g+1" },
+      { "t": "心里记下来，但懒得争。反正最后看结果。", "p": "f-3 r-1" }
+    ] },
+    { "t": "你新学了一手绝活（一道菜、一个技能都算），朋友问起时——", "o": [
+      { "t": "直接上手演示一遍，还悄悄希望他们多问两句。", "p": "f+3 r+1" },
+      { "t": "说个大概，细节留着。“你试试就知道了。”", "p": "f+1 j+1" },
+      { "t": "含糊过去。“就那样吧，没什么。”", "p": "f-1 d+1" },
+      { "t": "说自己还在学。其实早就练熟了。", "p": "f-3 r-1" }
+    ] },
+    { "t": "走夜路时，你习惯——", "o": [
+      { "t": "不戴耳机，脚步放稳。谁靠得太近，就直视回去。", "p": "f+3 d+2" },
+      { "t": "提前把路线发给一个人，尽量走有灯的地方。", "p": "f+1 y+1" },
+      { "t": "一边走一边看手机，走着走着就到了。", "p": "f-1 r+1" },
+      { "t": "宁可绕远走人多的地方，多花十分钟也认。", "p": "f-3 g+1" }
+    ] },
+    { "t": "被人当面夸“你好厉害”时，你——", "o": [
+      { "t": "笑着收下。“那当然，我练了很久。”", "p": "f+3 r+1" },
+      { "t": "说声谢谢，顺手也夸回去一句。", "p": "f+1 g+1" },
+      { "t": "摆摆手。“运气好而已。”", "p": "f-1 d+1" },
+      { "t": "有点不知道说什么，把话题转到别处。", "p": "f-3 r-1" }
+    ] },
+    { "t": "一件你很擅长的事，被外行认真指导了——", "o": [
+      { "t": "直接指出哪里不对，把原因也讲清楚。", "p": "f+3 x+1" },
+      { "t": "先照他说的试一小步，再让他看结果。", "p": "f+1 g+1" },
+      { "t": "嘴上“好好好”，手上还是按自己的来。", "p": "f-1 d+1" },
+      { "t": "“行，你说得对。”（心里毫无波澜）", "p": "f-3 r-1" }
+    ] },
+    { "t": "周末突然空出一整天，你最想——", "o": [
+      { "t": "约人。去哪儿都行，人多才热闹。", "p": "r+3 d-1" },
+      { "t": "出门逛逛，走到哪儿算哪儿。", "p": "r+1 x-1" },
+      { "t": "在家收拾、看点东西、发呆。一天很快就过去。", "p": "r-1 d+1" },
+      { "t": "去山里、去图书馆、去一个没人认识我的地方。", "p": "r-3 d+2" }
+    ] },
+    { "t": "楼下新开了家店，队排到门外——", "o": [
+      { "t": "必须去尝个鲜。排队也能顺便跟人聊两句。", "p": "r+3 y-1" },
+      { "t": "等风头过了再去，但会问问朋友好不好吃。", "p": "r+1 g+1" },
+      { "t": "看看评价，觉得没必要凑这个热闹。", "p": "r-1 x+1" },
+      { "t": "从窗前路过，连下楼都没打算。", "p": "r-3 d+1" }
+    ] },
+    { "t": "过年家族群里抢红包、发祝福，你——", "o": [
+      { "t": "气氛组。表情包全套，红包也发。", "p": "r+3 d-2" },
+      { "t": "抢完红包，再跟两三个亲近的人私聊两句。", "p": "r+1 g+1" },
+      { "t": "只抢不发，到手就潜水。", "p": "r-1 d+1" },
+      { "t": "消息免打扰，过了初五再看。", "p": "r-3 x+1" }
+    ] },
+    { "t": "一个不太熟的人，开始跟你讲他家里的糟心事——", "o": [
+      { "t": "认真听完，还帮他一起想怎么办。", "p": "r+3 g+2" },
+      { "t": "听完，给点实际建议，但不往深处走。", "p": "r+1 x+1" },
+      { "t": "礼貌接两句，心里想“为什么是我”。", "p": "r-1 q+1" },
+      { "t": "点头，然后把话题轻轻带走。", "p": "r-3 y+1" }
+    ] },
+    { "t": "下面哪种日子，你看着最舒服——", "o": [
+      { "t": "一屋子人，锅里炖着东西，谁来了都能加双筷子。", "p": "r+3 q-2" },
+      { "t": "在城市里。热闹是别人的，我随时能进去，也能出来。", "p": "r+1 x-1" },
+      { "t": "一个人住，窗明几净，日程自己定。", "p": "r-1 d+1" },
+      { "t": "山里一间屋子。风声比人声多。", "p": "r-3 q+1" }
+    ] },
+    { "t": "deadline 前夜，你更像哪种人——", "o": [
+      { "t": "早就做完了。这一晚只是再顺一遍。", "p": "x+3 y+2" },
+      { "t": "列清单，一项项收尾，卡在点上交。", "p": "x+1 j+1" },
+      { "t": "这一晚才写。但写得比前面七天加起来都顺。", "p": "x-1 q+1" },
+      { "t": "反正明天上午才要。明早再说。", "p": "x-3 y-1" }
+    ] },
+    { "t": "你的桌面和手机主屏——", "o": [
+      { "t": "分类、命名、图标对齐。看一眼就舒服。", "p": "x+3 j+1" },
+      { "t": "大致有分区，乱一点点。", "p": "x+1 y+1" },
+      { "t": "乱。但我闭着眼都能找到东西。", "p": "x-1 d+1" },
+      { "t": "截图堆到三千张，从没清过。", "p": "x-3 y-1" }
+    ] },
+    { "t": "出去玩，你更习惯——", "o": [
+      { "t": "提前把交通、餐厅、门票都排好。", "p": "x+3 y+1" },
+      { "t": "定个大概，剩下的看同行的人想怎么走。", "p": "x+1 g+1" },
+      { "t": "到了再说，地图都懒得打开。", "p": "x-1 r+1" },
+      { "t": "买张票就走。最烦做攻略。", "p": "x-3 y-1" }
+    ] },
+    { "t": "朋友把今晚的约临时改到明晚——", "o": [
+      { "t": "有点不爽。我的时间是提前排出来的。", "p": "x+3 f+1" },
+      { "t": "行吧。重新安排一下就好。", "p": "x+1 g+1" },
+      { "t": "无所谓。反正今晚也能干别的。", "p": "x-1 r+1" },
+      { "t": "太好了。正好今晚想去别的地方。", "p": "x-3 r+1" }
+    ] },
+    { "t": "一条规则明显不合理，但没人反对——", "o": [
+      { "t": "先照规则走，同时把它提到上面去改。", "p": "x+3 f+1" },
+      { "t": "跟着大家。没必要做那个出头的人。", "p": "x+1 g+1" },
+      { "t": "我这一块就不按它来。反正也没人管。", "p": "x-1 f+1" },
+      { "t": "我基本不看规则。能用就行。", "p": "x-3 r-1" }
+    ] },
+    { "t": "朋友深夜发来一句“我没事”，你——", "o": [
+      { "t": "直接打过去。“没事你发什么。”", "p": "g+3 f+1" },
+      { "t": "回一句“我在”。然后等他自己开口。", "p": "g+1 x+1" },
+      { "t": "回“早点睡”，不多猜。", "p": "g-1 q+1" },
+      { "t": "明天再说。情绪上头的时候，说什么都没用。", "p": "g-3 x+1" }
+    ] },
+    { "t": "看电影时，你的哭点在哪——", "o": [
+      { "t": "别人一红眼，我就绷不住。", "p": "g+3 r+1" },
+      { "t": "故事讲到我身上了，才会。", "p": "g+1 y+1" },
+      { "t": "先想：这剧本是不是在刻意煽情。", "p": "g-1 j+1" },
+      { "t": "全程清醒。散场的时候还挺累。", "p": "g-3 r-1" }
+    ] },
+    { "t": "团队里有人一直拖后腿——", "o": [
+      { "t": "先问一句：他是不是最近遇到什么事了。", "p": "g+3 r+1" },
+      { "t": "把活儿拆小，帮他跟上。", "p": "g+1 x+1" },
+      { "t": "把边界划清楚。该他的还是他的。", "p": "g-1 x+1" },
+      { "t": "换人。先把这件事做成再说。", "p": "g-3 j+1" }
+    ] },
+    { "t": "路边一只淋透的小猫跟着你走了两条街——", "o": [
+      { "t": "先带回去。后面的事，后面再说。", "p": "g+3 y-1" },
+      { "t": "买点吃的，然后发帖找人领养。", "p": "g+1 x+1" },
+      { "t": "蹲下来看看，然后继续走。", "p": "g-1 y+1" },
+      { "t": "会想它可能有人管。我不该插手。", "p": "g-3 d+1" }
+    ] },
+    { "t": "有人在你面前说另一个人的坏话——", "o": [
+      { "t": "会替那个人解释两句。", "p": "g+3 q-1" },
+      { "t": "听着，不接话。", "p": "g+1 x+1" },
+      { "t": "直接问：“这话你跟他本人说过吗。”", "p": "g-1 f+1" },
+      { "t": "左耳进右耳出。跟我没关系。", "p": "g-3 r-1" }
+    ] },
+    { "t": "一群人吃饭，你常自动站到哪个位置——", "o": [
+      { "t": "靠边、离上菜口近。方便随时起身。", "p": "d+3 y+1" },
+      { "t": "照顾细节的那个：加茶、递纸巾、问谁不吃辣。", "p": "d+1 g+1" },
+      { "t": "偏中间。负责把话接起来，别冷场。", "p": "d-1 r+1" },
+      { "t": "主位旁边。点菜、结账、安排车，都是我来。", "p": "d-3 r+2" }
+    ] },
+    { "t": "心里有天大的事，你会——", "o": [
+      { "t": "自己绕一圈走完。谁都不说。", "p": "d+3 j+1" },
+      { "t": "写下来，自己捋清楚。", "p": "d+1 x+1" },
+      { "t": "找一个最信的人，说一遍。", "p": "d-1 g+1" },
+      { "t": "拉一群人吃个饭。说出来就轻了。", "p": "d-3 r+2" }
+    ] },
+    { "t": "搬家、换城市，你更像——", "o": [
+      { "t": "一个人装箱、一个人搬、一个人收拾到半夜。", "p": "d+3 x-1" },
+      { "t": "自己列清单，但会叫朋友来搭把手。", "p": "d+1 x+1" },
+      { "t": "叫上一堆人。边搬边吃火锅。", "p": "d-1 r+1" },
+      { "t": "最好有人一起。一个人搬，我会崩。", "p": "d-3 r+1" }
+    ] },
+    { "t": "你的手机通知——", "o": [
+      { "t": "全部关掉。只在我想看的时候看。", "p": "d+3 x+1" },
+      { "t": "只留了几个人的。", "p": "d+1 j+1" },
+      { "t": "朋友的消息必须有提示。", "p": "d-1 g+1" },
+      { "t": "群里太安静，我会不舒服。", "p": "d-3 r+1" }
+    ] },
+    { "t": "一个人在异地过生日——", "o": [
+      { "t": "给自己买块蛋糕。安安静静过，挺好。", "p": "d+3 r-1" },
+      { "t": "随便走走。遇到什么算什么。", "p": "d+1 y-1" },
+      { "t": "发条朋友圈，看看有没有人约。", "p": "d-1 r+1" },
+      { "t": "一定要攒个局。一个人过生日太没意思了。", "p": "d-3 r+2" }
+    ] },
+    { "t": "一件困扰你很久的问题，突然有了点眉目——", "o": [
+      { "t": "通宵也要把它弄清楚。别的事全往后放。", "p": "q+3 j+1" },
+      { "t": "记下来，找时间系统地解决。", "p": "q+1 x+1" },
+      { "t": "先跟朋友说一声：“我可能要消失两天。”", "p": "q-2 g+1" },
+      { "t": "先放着。手头的人比这个问题要紧。", "p": "q-3 y-1" }
+    ] },
+    { "t": "你手里有一件很稀罕的东西，只能送给一个人——", "o": [
+      { "t": "给最懂它的那个人。哪怕不熟。", "p": "q+3 j+1" },
+      { "t": "给最配得上它的人。", "p": "q+1 x+1" },
+      { "t": "给我最亲的人。", "p": "q-1 g+1" },
+      { "t": "给最需要的那个。值不值不重要。", "p": "q-3 r+1" }
+    ] },
+    { "t": "做事的时候，你更在意——", "o": [
+      { "t": "这东西本身对不对、够不够好。", "p": "q+3 j+1" },
+      { "t": "有没有按说好的做完。", "p": "q+1 x+1" },
+      { "t": "一起做的人累不累。", "p": "q-1 g+1" },
+      { "t": "最后有没有人因此过得好一点。", "p": "q-3 y-1" }
+    ] },
+    { "t": "有人求你帮一件超出你能力范围的事——", "o": [
+      { "t": "先试着接。我想知道自己到哪儿。", "p": "q+3 f+1" },
+      { "t": "先判断能不能做到。能做到就接。", "p": "q+1 y+1" },
+      { "t": "能做多少做多少，先答应下来。", "p": "q-1 g+1" },
+      { "t": "答应。做不到也想办法。", "p": "q-3 g+2" }
+    ] },
+    { "t": "如果这辈子只能做成一件事——", "o": [
+      { "t": "弄明白我一直在追的那件事。", "p": "q+3 r-1" },
+      { "t": "做出一个自己拿得出手的东西。", "p": "q+1 j+1" },
+      { "t": "把在乎的人都照顾明白。", "p": "q-1 g+1" },
+      { "t": "让某个地方、某群人，因为我好过一点。", "p": "q-3 r+1" }
+    ] },
+    { "t": "拼一件家具，说明书十二页——", "o": [
+      { "t": "一页页来。螺丝按编号先摆好。", "p": "j+3 x+1" },
+      { "t": "主要看图。卡住了再翻文字。", "p": "j+1 x+1" },
+      { "t": "先装个大概，剩下的靠手感。", "p": "j-1 r+1" },
+      { "t": "不看说明书。装错了再拆。", "p": "j-3 y-1" }
+    ] },
+    { "t": "你写的东西被人挑出一个很小的错——", "o": [
+      { "t": "很难受。会把全篇再查一遍。", "p": "j+3 q+1" },
+      { "t": "改了就好。别的地方我信得过自己。", "p": "j+1 x+1" },
+      { "t": "不影响看懂就行。", "p": "j-1 g+1" },
+      { "t": "能看懂不就行了。没人在乎那个。", "p": "j-3 y-1" }
+    ] },
+    { "t": "听人说话时，你更容易记住——", "o": [
+      { "t": "他用的那个词，还有那半句没说完的话。", "p": "j+3 g+1" },
+      { "t": "事情的顺序，和前后的因果。", "p": "j+1 x+1" },
+      { "t": "他当时的语气和情绪。", "p": "j-1 g+1" },
+      { "t": "大概意思。具体怎么说的，忘了。", "p": "j-3 r+1" }
+    ] },
+    { "t": "旅行回来，你的相册——", "o": [
+      { "t": "分类、修图、删掉糊的。只留能看的。", "p": "j+3 x+1" },
+      { "t": "挑几张发出来，其余留着。", "p": "j+1 r+1" },
+      { "t": "全存着。一张都舍不得删。", "p": "j-1 g+1" },
+      { "t": "懒得拍。眼睛看过就够了。", "p": "j-3 y-1" }
+    ] },
+    { "t": "判断一件事，你最靠——", "o": [
+      { "t": "数据和细节。一处处对。", "p": "j+3 x+1" },
+      { "t": "流程，和以前有没有类似的先例。", "p": "j+1 x+1" },
+      { "t": "整体感觉。说不太清，但我知道。", "p": "j-1 g+1" },
+      { "t": "第一直觉。基本没错过。", "p": "j-3 f+1" }
+    ] },
+    { "t": "临近某个年纪、某个节点，你脑子里先冒出来的是——", "o": [
+      { "t": "十年后我想站在哪儿，现在该先铺什么。", "p": "y+3 x+1" },
+      { "t": "下一步要什么。先把手上的事做完。", "p": "y+1 x+1" },
+      { "t": "过好今年就行。剩下的再说。", "p": "y-1 r+1" },
+      { "t": "想那么远干嘛。谁能算得准。", "p": "y-3 r-1" }
+    ] },
+    { "t": "学一样新东西，你通常——", "o": [
+      { "t": "先把根子打牢。慢一点没关系。", "p": "y+3 j+1" },
+      { "t": "按课程一步步来。", "p": "y+1 x+1" },
+      { "t": "先玩起来。缺什么补什么。", "p": "y-1 r+1" },
+      { "t": "直接用。用不动了再说。", "p": "y-3 f+1" }
+    ] },
+    { "t": "攒钱、攒力气，你更像——", "o": [
+      { "t": "备着。说不定哪天用得上。", "p": "y+3 x+1" },
+      { "t": "够用的时候，就花一点。", "p": "y+1 g+1" },
+      { "t": "想花就花。明天再说。", "p": "y-1 r+1" },
+      { "t": "放着不用，才是浪费。", "p": "y-3 r+1" }
+    ] },
+    { "t": "一件要做很久的事摆在你面前——", "o": [
+      { "t": "先算清楚代价，把每一步铺好。", "p": "y+3 x+1" },
+      { "t": "按计划推进。慢慢磨。", "p": "y+1 x+1" },
+      { "t": "先冲一波。看看局面再改。", "p": "y-1 f+1" },
+      { "t": "走一步看一步。反正都会变。", "p": "y-3 d+1" }
+    ] },
+    { "t": "你最舒服的节奏是——", "o": [
+      { "t": "心里有一张很久以后的图。每天朝那边挪一点。", "p": "y+3 q+1" },
+      { "t": "这个月的事安排妥当。", "p": "y+1 x+1" },
+      { "t": "今天有今天的意思。", "p": "y-1 r+1" },
+      { "t": "没有节奏。什么时候想干什么，就干什么。", "p": "y-3 r-1" }
+    ] }
+  ],
+  "identities": [
+    {
+      "id": "jianxiu", "name": "剑修", "tag": "天生剑骨",
+      "slogan": "我这一剑，先斩内耗。",
+      "why": "你不太会绕弯子。想清楚就动手，想不清楚就先动手再想。别人还在权衡，你已经把最难的那一步走完了。你身上有种很锋利的东西——不是攻击性，是“我不打算糊弄自己”。",
+      "secret": "你的洞府只有三样东西：剑、水、一张没铺的床。你渡劫大概率不是因为雷太狠，是懒得躲。嘴上说着“随便”，心里那把尺一直在量。",
+      "sig": [1.00, -0.05, -0.20, -0.20, 0.80, 0.50, 0.10, 0.05]
+    },
+    {
+      "id": "leifa", "name": "雷法狂人", "tag": "雷霆在掌",
+      "slogan": "道理我都懂，但我先炸。",
+      "why": "你的情绪来得快，去得也快，像一道雷。你讨厌拖泥带水，讨厌“再研究研究”，讨厌一群人围着一个问题转圈。你看着冲动，其实每次出手前那半秒，你已经算过了。",
+      "secret": "手机电量常年 3%，但你从不慌。你的雷劈过好几次自己人，事后赔罪赔得比谁都诚恳。你其实特别怕安静。",
+      "sig": [1.00, 0.30, -1.00, -0.30, 0.30, 0.15, -0.60, -0.75]
+    },
+    {
+      "id": "danxiu", "name": "丹修", "tag": "丹心通透",
+      "slogan": "别急，火候我盯着。",
+      "why": "你是把“照顾”做成手艺的人。别人问你要不要帮忙，你说不用；转头把所有人的份都做好了。你的耐心不是忍出来的，是你真的觉得这事值得多等一会儿。",
+      "secret": "炉子边永远温着一壶水，谁来了都有得喝。炼废的丹比炼成的多，你都留着，说“下次知道哪儿错了”。你最大的野心，是没人看出来你有野心。",
+      "sig": [-0.40, 0.25, 0.70, 0.75, -0.30, -0.60, 0.90, 0.70]
+    },
+    {
+      "id": "yixiu", "name": "医修", "tag": "悬壶在手",
+      "slogan": "你先别说话，把手伸出来。",
+      "why": "别人慌的时候你在场，别人散了你还在。你不擅长讲漂亮话，但谁不对劲你第一眼就知道——那种“他今天笑得比平时用力”的细节，只有你看见。",
+      "secret": "药箱里一半是给别人备的，自己那份永远缺。你救过的人里有几个你其实不太喜欢，但你还是救了。你最想听到的不是“谢谢”，是“我好了”。",
+      "sig": [-0.60, 0.50, 0.10, 1.00, -0.25, -1.00, 0.40, -0.50]
+    },
+    {
+      "id": "fuxiu", "name": "符修", "tag": "一笔定乾坤",
+      "slogan": "规矩不是束缚，是我画的线。",
+      "why": "你对“准”有近乎固执的偏爱。同一件事做到第七遍，还是第一遍的水准，因为你不允许自己在细节上松手。别人觉得你较真，其实那是你唯一觉得安全的方式。",
+      "secret": "写废的符纸能堆到房梁，每一张都留着，说“这不叫废，这叫样本”。画符时连呼吸的节奏都是固定的。你其实很羡慕那些随手一画就成的人，但你不打算学。",
+      "sig": [-0.45, 0.05, 0.90, -0.20, -0.20, 0.70, 1.00, 0.30]
+    },
+    {
+      "id": "zhenshi", "name": "阵师", "tag": "一子落，全局动",
+      "slogan": "我看的不是这一步，是十步之后。",
+      "why": "你天生带着一双看“局”的眼睛。大家商量事情，你话不多，脑子里已经在推后面三步。你不喜欢临场发挥，因为你清楚临场发挥的代价，最后总有人要付。",
+      "secret": "出门前会想好三条退路，包括“如果下雨”和“如果有人不想去”。洞府看着随意，其实每样东西的位置都是算过的。下棋输了你也认，只是会说“我算到了，只是晚了半息”。",
+      "sig": [-0.20, 0.00, 0.80, -0.80, 0.50, 0.30, 0.20, 1.00]
+    },
+    {
+      "id": "qishi", "name": "器师", "tag": "万物有心",
+      "slogan": "坏了的都能修，修不好的我改。",
+      "why": "你的手比嘴会说话。你不擅长解释自己，但你做出来的东西替你说完了。你信“好不好”是能被摸出来的，不是被说出来的。",
+      "secret": "给用久了的物件起过名字。工具从不外借，但会亲手替人打一把。半夜想到一个改法立刻爬起来试，试完发现是错的，然后笑着睡回去。",
+      "sig": [-0.10, 0.40, 0.20, 0.35, 0.00, 0.80, 0.90, -0.30]
+    },
+    {
+      "id": "yushoushi", "name": "御兽使", "tag": "万兽听心",
+      "slogan": "它不会说话，但它认得我。",
+      "why": "你跟“不会说话的东西”处得最好。你身上有种让人放松的气场，动物先感觉到，人跟着感觉到。你不太讲道理，你更喜欢陪着。",
+      "secret": "袖子里常年藏着零食，最后都喂了路边的猫。你家那只的十几种叫声你都听得懂，还能跟它吵一架。坐骑其实是自己赖上你的。",
+      "sig": [0.10, 0.70, -0.90, 1.00, -0.80, -0.20, -0.20, -0.40]
+    },
+    {
+      "id": "yinxiu", "name": "音修", "tag": "一弦动山河",
+      "slogan": "我不吵，我让声音替我说。",
+      "why": "你感受世界的方式是“余韵”。别人看结果，你听的是那口气对不对。你话不多，但你说过的一句，常被人记很久。",
+      "secret": "唱到动情处会突然停下，因为“再往下就过了”。琴上有一道旧痕，是某个人留下的，你从不修。你在人群里很安静，但你的安静很有存在感。",
+      "sig": [-0.50, -1.00, -0.10, 0.95, 0.20, 0.00, -0.35, -0.50]
+    },
+    {
+      "id": "huanshushi", "name": "幻术师", "tag": "虚中生花",
+      "slogan": "真话太直，我给它披件衣裳。",
+      "why": "你看得清人和场面，但懒得把话说透。你擅长的是“让人自己看见”——换个说法、换个角度，对方就懂了。你不是不真诚，你只是知道直白有时候最没用。",
+      "secret": "撒过的谎里，有一半是为了不让人难堪。真容和平时的样子差得挺远，见过的没几个。你演的每一场，最后都会把自己也演进去一点。",
+      "sig": [-0.85, 0.30, -0.70, 0.30, 0.40, 0.10, 0.20, -0.20]
+    },
+    {
+      "id": "tianji", "name": "天机阁主", "tag": "掌中天机",
+      "slogan": "我不动手，我让局自己动。",
+      "why": "你脑子里天生有一张关系网。谁跟谁近、谁欠谁、哪句话该在什么时候说，你比当事人清楚。你不站最前面，你站那个能看见所有人的位置。",
+      "secret": "你知道的比说出来的多十倍，剩下的打算带进棺材。茶凉了三次你都没喝，因为你在想一件事。你最怕的不是算错，是算对了却来不及。",
+      "sig": [0.00, 0.90, 0.50, -0.70, 0.00, 0.30, 0.30, 0.90]
+    },
+    {
+      "id": "zongzhu", "name": "宗主掌门", "tag": "一宗之主",
+      "slogan": "我在，你们就散不了。",
+      "why": "一群人里，你总是最后走的那一个。不是你能干，是你放不下——灯没关、人没齐、事没收尾，你就走不了。你的威望不是喊出来的，是每一次“我在”堆出来的。",
+      "secret": "你其实很累，但从不说。书房里有一张写满名字的纸，划掉的那些你都记得。你最强的法术是“让所有人觉得这事不难”。",
+      "sig": [0.40, 1.00, 0.70, 0.65, -0.90, -0.40, 0.00, 0.50]
+    },
+    {
+      "id": "sanxiu", "name": "散修游侠", "tag": "一剑一壶一江湖",
+      "slogan": "规矩太多，我先走一步。",
+      "why": "你受不了被安排，也受不了袖手旁观。路过的时候会插手，插完手就走，不领情也不留名。你的自由不是“什么都不管”，是“该管的我管，管完我走”。",
+      "secret": "行囊里永远多一双筷子，说是“万一遇到人”。同一个地方待不过三个月，但每一家好吃的面你都记得。仇家比朋友多，不过仇家也承认你讲究。",
+      "sig": [0.80, 0.60, -0.80, 0.35, 0.90, -0.60, -0.30, -0.55]
+    },
+    {
+      "id": "xiaoyao", "name": "逍遥散仙", "tag": "云外一闲人",
+      "slogan": "天塌下来，也等我喝完这杯。",
+      "why": "你不是不上心，你是把上心用在了很少的几件事上。大部分事你都能笑着说“随它去”，那不是敷衍，是你真的算过——不值得。",
+      "secret": "洞府在哪儿，你自己有时也要想一想。答应过很多事，做到的只有真心想做的那些，但那些一件没落。你活得像一个漏洞，可所有人都偷偷羡慕你。",
+      "sig": [0.00, -1.00, -1.00, 0.10, 0.60, 0.20, -0.30, -0.90]
+    },
+    {
+      "id": "yaozu", "name": "妖族化形", "tag": "山野本相",
+      "slogan": "我不装，我本来就这样。",
+      "why": "你身上有一种没被驯服的坦率。喜欢就靠近，不喜欢就走开，不解释、不圆场。你学了很多年“人该怎么说话”，最后还是更愿意用最直的那个版本。",
+      "secret": "生气时耳朵会动，你自己不知道。对气味和天气特别灵，能提前闻到要下雨。人话里学得最好的一句是“随便”，用得也最多。",
+      "sig": [0.50, -0.30, -0.80, 0.90, 0.30, 0.10, -0.60, -0.20]
+    },
+    {
+      "id": "cangshu", "name": "藏书阁守书人", "tag": "万卷藏锋",
+      "slogan": "我不出门，天下的事我都知道。",
+      "why": "你喜欢“知道”本身。别人追结果，你追那句“为什么会这样”。你不爱社交，但不是不喜欢人——你只是觉得大部分人聊的东西不够有意思。你安静，安静里全是东西。",
+      "secret": "屋里的书有一半没看完，但每一本在哪一格你都记得。能一句话说出某件事的出处，然后假装这是常识。唯一会主动开口的时刻，是有人问了一个好问题。",
+      "sig": [-0.90, -0.90, 0.30, -0.30, 1.00, 0.80, 0.10, 0.50]
+    }
+  ],
+  "chartAxes": ["f", "r", "x", "g", "d", "q"]
+};
+/* ================= 数据结束 ================= */
+</script>
+<script>
+(function () {
+  "use strict";
+  /* 【上线前改这一行】填上你自己的网址（例如 https://xxx.vercel.app），
+     复制出来的分享文案就会自动带上这个链接；留空则只复制文字，不带链接 */
+  var SHARE_URL = "https://kurarin31.github.io/xianxia-test/";
+  var Q = DATA.questions, IDS = DATA.identities, AXES = DATA.axes;
+  var AX = {}; AXES.forEach(function (a) { AX[a.k] = a; });
+  var KEYS = ["甲", "乙", "丙", "丁"];
+  var N = Q.length;
+
+  /* ---------- 选项顺序：固定种子打乱，每次打开都一样，避免答案总在同一个位置 ---------- */
+  function hash32(x) {
+    x = Math.imul(x ^ (x >>> 16), 0x45d9f3b);
+    x = Math.imul(x ^ (x >>> 16), 0x45d9f3b);
+    x ^= x >>> 16;
+    return (x >>> 0) / 4294967296;
+  }
+  var orders = Q.map(function (q, qi) {
+    var arr = q.o.map(function (_, i) { return i; });
+    for (var i = arr.length - 1; i > 0; i--) {
+      var h = (qi * 73856093) ^ (i * 19349663) ^ 20260117;
+      var j = Math.floor(hash32(h) * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  });
+
+  /* ---------- 解析分值 ---------- */
+  function parseP(str) {
+    var d = {};
+    (str || "").split(" ").forEach(function (tk) {
+      if (!tk) return;
+      d[tk.charAt(0)] = parseInt(tk.slice(1), 10) || 0;
+    });
+    return d;
+  }
+  Q.forEach(function (q) { q.o.forEach(function (o) { o._d = parseP(o.p); }); });
+
+  /* ---------- 每题平均值：作为“平均答题者”的零点，避免某些维度天然偏高 ---------- */
+  var expect = {}, maxPos = {}, maxNeg = {};
+  AXES.forEach(function (a) { expect[a.k] = 0; maxPos[a.k] = 0; maxNeg[a.k] = 0; });
+  Q.forEach(function (q) {
+    AXES.forEach(function (a) {
+      var sum = 0, hi = -Infinity, lo = Infinity;
+      q.o.forEach(function (o) {
+        var v = o._d[a.k] || 0;
+        sum += v;
+        if (v > hi) hi = v;
+        if (v < lo) lo = v;
+      });
+      expect[a.k] += sum / q.o.length;
+      maxPos[a.k] += hi;
+      maxNeg[a.k] += lo;
+    });
+  });
+  AXES.forEach(function (a) {
+    maxPos[a.k] = Math.max(0.6, maxPos[a.k] - expect[a.k]);
+    maxNeg[a.k] = Math.max(0.6, expect[a.k] - maxNeg[a.k]);
+  });
+
+  /* ---------- 状态 ---------- */
+  var answers = new Array(N).fill(-1);
+  var cur = 0;
+  var locked = false;
+
+  /* ---------- 元素 ---------- */
+  var views = {
+    start: document.getElementById("view-start"),
+    quiz: document.getElementById("view-quiz"),
+    result: document.getElementById("view-result")
+  };
+  var elIdx = document.getElementById("q-idx");
+  var elCount = document.getElementById("q-count");
+  var elText = document.getElementById("q-text");
+  var elOpts = document.getElementById("q-opts");
+  var elPrev = document.getElementById("btn-prev");
+  var elFill = document.getElementById("meter-fill");
+  var elDot = document.getElementById("meter-dot");
+  var elCta = document.getElementById("result-cta");
+  var elHint = document.getElementById("foot-hint");
+  var toastEl = document.getElementById("toast");
+
+  var CN = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+  function cn(n) {
+    if (n <= 10) return CN[n];
+    if (n < 20) return "十" + CN[n - 10];
+    var t = Math.floor(n / 10), u = n % 10;
+    return CN[t] + "十" + (u ? CN[u] : "");
+  }
+  function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+
+  function show(name) {
+    Object.keys(views).forEach(function (k) {
+      views[k].classList.toggle("is-active", k === name);
+    });
+  }
+
+  function answeredAll() { return answers.every(function (a) { return a >= 0; }); }
+
+  /* ---------- 渲染题目 ---------- */
+  function render() {
+    var q = Q[cur];
+    elIdx.textContent = cn(cur + 1);
+    elCount.textContent = pad2(cur + 1) + " / " + pad2(N);
+    elText.textContent = q.t;
+    var pct = ((cur + 1) / N) * 100;
+    elFill.style.width = pct + "%";
+    elDot.style.left = pct + "%";
+
+    elOpts.innerHTML = "";
+    orders[cur].forEach(function (oi, pos) {
+      var o = q.o[oi];
+      var btn = document.createElement("button");
+      btn.className = "opt" + (answers[cur] === oi ? " is-on" : "");
+      btn.type = "button";
+      btn.setAttribute("aria-pressed", answers[cur] === oi ? "true" : "false");
+      btn.setAttribute("data-pos", pos);
+      btn.innerHTML = '<span class="key">' + KEYS[pos] + '</span><span class="txt"></span>';
+      btn.querySelector(".txt").textContent = o.t;
+      btn.addEventListener("click", function (e) { pick(oi, btn, e); });
+      elOpts.appendChild(btn);
+    });
+
+    elPrev.disabled = cur === 0;
+    elHint.textContent = cur === N - 1 ? "答完就能揭签" : "凭直觉，别权衡";
+    elCta.classList.toggle("is-hidden", !answeredAll());
+  }
+
+  /* ---------- 选择：高亮 + 轻微缩放 + 涟漪 ---------- */
+  function pick(oi, btn, ev) {
+    if (locked) return;
+    answers[cur] = oi;
+    Array.prototype.forEach.call(elOpts.children, function (b) {
+      b.classList.remove("is-on");
+      b.setAttribute("aria-pressed", "false");
+      var rp = b.querySelector(".ripple");
+      if (rp) rp.remove();
+    });
+    btn.classList.add("is-on");
+    btn.setAttribute("aria-pressed", "true");
+
+    var rp = document.createElement("span");
+    var r = Math.max(btn.offsetWidth, btn.offsetHeight) * 0.9;
+    var rect = btn.getBoundingClientRect();
+    var x = (ev && ev.clientX ? ev.clientX - rect.left : rect.width / 2);
+    var y = (ev && ev.clientY ? ev.clientY - rect.top : rect.height / 2);
+    rp.className = "ripple";
+    rp.style.width = rp.style.height = r + "px";
+    rp.style.left = (x - r / 2) + "px";
+    rp.style.top = (y - r / 2) + "px";
+    btn.appendChild(rp);
+    setTimeout(function () { if (rp.parentNode) rp.remove(); }, 620);
+
+    if (cur < N - 1) {
+      locked = true;
+      setTimeout(function () { locked = false; cur++; render(); }, 380);
+    } else {
+      elCta.classList.remove("is-hidden");
+      elHint.textContent = "四十问毕，可以揭签了";
+    }
+  }
+
+  /* ---------- 计分 ---------- */
+  function profile() {
+    var s = {};
+    AXES.forEach(function (a) { s[a.k] = 0; });
+    answers.forEach(function (oi, qi) {
+      if (oi < 0) return;
+      var d = Q[qi].o[oi]._d;
+      for (var k in d) { if (k in s) s[k] += d[k]; }
+    });
+    var v = {};
+    AXES.forEach(function (a) {
+      var k = a.k, val = s[k] - expect[k], m = val >= 0 ? maxPos[k] : maxNeg[k];
+      v[k] = Math.max(-1, Math.min(1, val / (m || 1)));
+    });
+    return v;
+  }
+
+  var SIG_NORM = {};
+  IDS.forEach(function (id) {
+    SIG_NORM[id.id] = Math.sqrt(id.sig.reduce(function (t, x) { return t + x * x; }, 0)) || 1;
+  });
+
+  /* 余弦相似度：看的是六个维度的“形状”是否吻合，而不是单纯比总分 */
+  function matchIdentity(v) {
+    var nv = Math.sqrt(AXES.reduce(function (t, a) { return t + v[a.k] * v[a.k]; }, 0));
+    if (!nv) return IDS[0];
+    var best = IDS[0], bestSim = -2;
+    IDS.forEach(function (id) {
+      var dot = 0;
+      AXES.forEach(function (a, i) { dot += id.sig[i] * v[a.k]; });
+      var sim = dot / (nv * SIG_NORM[id.id]);
+      if (sim > bestSim) { bestSim = sim; best = id; }
+    });
+    return best;
+  }
+
+  /* ---------- 结果渲染 ---------- */
+  function renderChart(v) {
+    var wrap = document.getElementById("r-chart");
+    wrap.innerHTML = "";
+    DATA.chartAxes.forEach(function (k) {
+      var a = AX[k], val = v[k] || 0;
+      var row = document.createElement("div");
+      row.className = "axis";
+      row.innerHTML =
+        '<span class="axis-l">' + a.l + '</span>' +
+        '<div class="axis-track"><span class="axis-mid"></span>' +
+        '<span class="axis-fill"></span><span class="axis-dot"></span></div>' +
+        '<span class="axis-r">' + a.r + '</span>';
+      wrap.appendChild(row);
+
+      var fill = row.querySelector(".axis-fill");
+      var dot = row.querySelector(".axis-dot");
+      var color = val >= 0 ? "var(--jade)" : "var(--gold)";
+      fill.style.background = color;
+      dot.style.background = color;
+      dot.style.boxShadow = "0 0 0 3px " + (val >= 0 ? "rgba(60,122,110,.12)" : "rgba(169,133,64,.14)");
+
+      if (Math.abs(val) > 0.22) {
+        var strong = val > 0 ? row.querySelector(".axis-l") : row.querySelector(".axis-r");
+        strong.style.color = "var(--ink)";
+        strong.style.fontWeight = "500";
+      }
+
+      // 延迟一帧再赋宽度，让动画从中心长出来；左侧为正、右侧为负
+      setTimeout(function () {
+        var shown = Math.sign(val) * Math.pow(Math.abs(val), 0.78);
+        var half = Math.abs(shown) * 50;
+        fill.style.width = half + "%";
+        fill.style.left = (shown >= 0 ? 50 - half : 50) + "%";
+        dot.style.left = (50 - shown * 50) + "%";
+      }, 120);
+    });
+  }
+
+  function showResult() {
+    var v = profile();
+    var id = matchIdentity(v);
+    document.getElementById("r-name").textContent = id.name;
+    document.getElementById("r-tag").textContent = id.tag;
+    document.getElementById("r-slogan").textContent = "「" + id.slogan + "」";
+    document.getElementById("r-why").textContent = id.why;
+    document.getElementById("r-secret").textContent = id.secret;
+    renderChart(v);
+    show("result");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  /* ---------- 分享文案 ---------- */
+  function shareText(id) {
+    var txt = "我在仙侠世界的身份是「" + id.name + "」\n" +
+      id.tag + " · " + id.slogan + "\n" +
+      "你也来测一下？四十道生活题，不用懂仙侠，凭直觉选。";
+    return SHARE_URL ? txt + "\n" + SHARE_URL : txt;
+  }
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("is-on");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { toastEl.classList.remove("is-on"); }, 2000);
+  }
+  function copyText(txt, okMsg) {
+    var done = function () { toast(okMsg); };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(txt).then(done, fallback);
+    } else { fallback(); }
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = txt;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); done(); }
+      catch (e) { toast("复制失败，长按选择即可"); }
+      document.body.removeChild(ta);
+    }
+  }
+  function currentIdentity() {
+    var v = profile();
+    return matchIdentity(v);
+  }
+
+  /* ---------- 事件 ---------- */
+  document.getElementById("btn-start").addEventListener("click", function () {
+    cur = 0;
+    render();
+    show("quiz");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  });
+
+  elPrev.addEventListener("click", function () {
+    if (cur > 0) { cur--; render(); }
+  });
+
+  document.getElementById("btn-submit").addEventListener("click", showResult);
+
+  document.getElementById("btn-retest").addEventListener("click", function () {
+    answers = new Array(N).fill(-1);
+    cur = 0;
+    show("start");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  });
+
+  document.getElementById("btn-copy").addEventListener("click", function () {
+    copyText(shareText(currentIdentity()), "文案已复制，去发给朋友吧");
+  });
+
+  document.getElementById("btn-share").addEventListener("click", function () {
+    var id = currentIdentity(), txt = shareText(id);
+    if (navigator.share) {
+      navigator.share({ title: "测一测 | 你在仙侠世界是什么身份", text: txt }).catch(function (err) {
+        if (err && err.name === "AbortError") return;   // 用户自己取消，不提示
+        copyText(txt, "这个环境不支持直接分享，文案已复制");
+      });
+    } else {
+      copyText(txt, "已复制，粘贴给朋友就行");
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (!views.quiz.classList.contains("is-active")) return;
+    var n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4) {
+      var btn = elOpts.children[n - 1];
+      if (btn) btn.click();
+    } else if (e.key === "ArrowLeft") {
+      elPrev.click();
+    }
+  });
+})();
+</script>
+</body>
+</html>
