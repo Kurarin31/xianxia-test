@@ -1105,118 +1105,126 @@ const DATA = {
       } else { line += ch; }
     }
     if (line) lines.push(line);
+    /* 兜底：万一某行以标点开头，并回上一行，避免出现孤零零的句号 */
+    for (var k = lines.length - 1; k > 0; k--) {
+      if (NO_HEAD.indexOf(lines[k].charAt(0)) >= 0) { lines[k - 1] += lines[k]; lines.splice(k, 1); }
+    }
     return lines;
   }
 
-  function layoutCard(ctx, id, v, draw) {
-    var W = 1080, PAD = 100, maxW = W - PAD * 2, y = 168;
+  function layoutCard(ctx, id, v, draw, s) {
+    s = s || 1;
+    var W = 1080, PAD = 88, maxW = W - PAD * 2, y = 112;
+    function px(n) { return Math.round(n * s); }
 
-    ctx.font = '400 26px ' + SANS;
-    if (draw) { ctx.fillStyle = "rgba(92,102,92,.9)"; spaced(ctx, "仙侠身份测试", PAD, y, 7); }
+    ctx.font = '400 ' + px(20) + 'px ' + SANS;
+    if (draw) { ctx.fillStyle = "rgba(92,102,92,.9)"; spaced(ctx, "仙侠身份测试", PAD, y, 6); }
 
-    y = 268;
-    if (draw) { ctx.font = '400 33px ' + SANS; ctx.fillStyle = "#7A8272"; ctx.fillText("你的本命仙侠身份", PAD, y); }
+    y += px(60);
+    if (draw) { ctx.font = '400 ' + px(24) + 'px ' + SANS; ctx.fillStyle = "#7A8272"; ctx.fillText("你的本命仙侠身份", PAD, y); }
 
-    var ns = 110;
+    var ns = px(80);
     ctx.font = '700 ' + ns + 'px ' + SERIF;
-    while (ctx.measureText(id.name).width > maxW - 14 && ns > 44) { ns -= 4; ctx.font = '700 ' + ns + 'px ' + SERIF; }
-    var nameBase = y + 124;
+    while (ctx.measureText(id.name).width > maxW && ns > px(46)) { ns -= 2; ctx.font = '700 ' + ns + 'px ' + SERIF; }
+    var nameBase = y + px(86);
     if (draw) { ctx.fillStyle = "#1D2723"; ctx.fillText(id.name, PAD, nameBase); }
     y = nameBase;
 
-    ctx.font = '400 33px ' + SANS;
-    if (draw) { ctx.fillStyle = "#5F695D"; ctx.fillText(id.tag, PAD, y + 58); }
-    y = y + 58;
+    ctx.font = '400 ' + px(26) + 'px ' + SANS;
+    if (draw) { ctx.fillStyle = "#5F695D"; ctx.fillText(id.tag, PAD, y + px(42)); }
+    y = y + px(42);
 
-    ctx.font = '400 40px ' + SERIF;
-    var sl = wrap(ctx, "「" + id.slogan + "」", maxW - 8);
+    ctx.font = '400 ' + px(32) + 'px ' + SERIF;
+    var lhS = px(44);
+    var sl = wrap(ctx, "「" + id.slogan + "」", maxW);
     if (draw) {
       ctx.fillStyle = "#3E5A50";
-      for (var i = 0; i < sl.length; i++) ctx.fillText(sl[i], PAD, y + 66 + i * 64);
+      for (var i = 0; i < sl.length; i++) ctx.fillText(sl[i], PAD, y + px(44) + i * lhS);
     }
-    y = y + 66 + sl.length * 64;
+    y = y + px(44) + sl.length * lhS;
 
-    y += 44;
+    y += px(30);
     if (draw) {
       ctx.strokeStyle = "rgba(30,55,51,.2)"; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(W - PAD, y); ctx.stroke();
     }
-    y += 68;
+    y += px(44);
 
     function block(title, body) {
-      ctx.font = '400 26px ' + SANS;
-      if (draw) { ctx.fillStyle = "#A67F3F"; spaced(ctx, title, PAD, y, 6); }
-      y += 46;
-      ctx.font = '400 35px ' + SERIF;
+      ctx.font = '400 ' + px(20) + 'px ' + SANS;
+      if (draw) { ctx.fillStyle = "#A67F3F"; spaced(ctx, title, PAD, y, 5); }
+      y += px(32);
+      ctx.font = '400 ' + px(27) + 'px ' + SERIF;
+      var lh = px(42);
       var ls = wrap(ctx, body, maxW);
       if (draw) {
         ctx.fillStyle = "#26332E";
-        for (var j = 0; j < ls.length; j++) ctx.fillText(ls[j], PAD, y + 46 + j * 66);
+        for (var j = 0; j < ls.length; j++) ctx.fillText(ls[j], PAD, y + px(34) + j * lh);
       }
-      y = y + 46 + ls.length * 66;
+      y = y + px(34) + ls.length * lh;
     }
     block("为什么是你", id.why);
-    y += 28;
+    y += px(26);
     block("隐藏特质 · 小彩蛋", id.secret);
 
-    /* 六维灵根 */
-    y += 76;
-    ctx.font = '400 26px ' + SANS;
-    if (draw) { ctx.fillStyle = "#A67F3F"; spaced(ctx, "你的六维灵根", PAD, y, 6); }
-    y += 34;
-    var trackL = PAD + 112, trackR = W - PAD - 112;
+    y += px(54);
+    ctx.font = '400 ' + px(20) + 'px ' + SANS;
+    if (draw) { ctx.fillStyle = "#A67F3F"; spaced(ctx, "你的六维灵根", PAD, y, 5); }
+    y += px(26);
+
+    var trackL = PAD + px(94), trackR = W - PAD - px(94);
     var midX = (trackL + trackR) / 2, halfTrack = (trackR - trackL) / 2;
+    var rowH = px(39), barH = Math.max(4, px(6)), dotR = Math.max(5, px(6.5));
     DATA.chartAxes.forEach(function (k) {
       var ax = AX[k], val = v[k] || 0;
       var shown = Math.sign(val) * Math.pow(Math.abs(val), 0.78);
-      var rowY = y + 30;
-      var strong = Math.abs(val) > 0.2;
-      ctx.font = '400 27px ' + SANS;
+      var rowY = y + px(25), strong = Math.abs(val) > 0.2;
+      ctx.font = '400 ' + px(24) + 'px ' + SANS;
       ctx.textAlign = "right";
-      if (draw) { ctx.fillStyle = strong ? "#26332E" : "#8A9086"; ctx.fillText(ax.l, trackL - 24, rowY); }
+      if (draw) { ctx.fillStyle = strong ? "#26332E" : "#8A9086"; ctx.fillText(ax.l, trackL - px(18), rowY); }
       ctx.textAlign = "left";
-      if (draw) { ctx.fillStyle = strong ? "#26332E" : "#8A9086"; ctx.fillText(ax.r, trackR + 24, rowY); }
+      if (draw) { ctx.fillStyle = strong ? "#26332E" : "#8A9086"; ctx.fillText(ax.r, trackR + px(18), rowY); }
       if (draw) {
-        ctx.strokeStyle = "rgba(30,55,51,.2)"; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(trackL, rowY - 9); ctx.lineTo(trackR, rowY - 9); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(midX, rowY - 15); ctx.lineTo(midX, rowY - 3);
-        ctx.strokeStyle = "rgba(30,55,51,.28)"; ctx.stroke();
+        ctx.strokeStyle = "rgba(30,55,51,.20)"; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(trackL, rowY - 8); ctx.lineTo(trackR, rowY - 8); ctx.stroke();
+        ctx.strokeStyle = "rgba(30,55,51,.28)";
+        ctx.beginPath(); ctx.moveTo(midX, rowY - 13); ctx.lineTo(midX, rowY - 3); ctx.stroke();
         var wBar = Math.abs(shown) * halfTrack;
         if (wBar > 1) {
           ctx.fillStyle = val >= 0 ? "#3C7A6E" : "#A98540";
-          ctx.fillRect(val >= 0 ? midX - wBar : midX, rowY - 12, wBar, 6);
+          ctx.fillRect(val >= 0 ? midX - wBar : midX, rowY - 8 - barH / 2, wBar, barH);
           ctx.beginPath();
-          ctx.arc(val >= 0 ? midX - wBar : midX + wBar, rowY - 9, 7, 0, Math.PI * 2);
+          ctx.arc(val >= 0 ? midX - wBar : midX + wBar, rowY - 8, dotR, 0, Math.PI * 2);
           ctx.fill();
         }
       }
-      y += 68;
+      y += rowH;
     });
-    y += 16;
     ctx.textAlign = "left";
     return y;
   }
 
   function buildCard(id) {
-    var W = 1080;
-    var v = profile();
-    var contentEnd = layoutCard(document.createElement("canvas").getContext("2d"), id, v, false);
-    var H = Math.max(1440, Math.round(contentEnd + 404));
+    var W = 1080, v = profile();
+    var probe = document.createElement("canvas").getContext("2d");
+    var s = 1, end = 0;
+    for (s = 1; s >= 0.76; s -= 0.03) {
+      end = layoutCard(probe, id, v, false, s);
+      if (end <= 1188) break;
+    }
+    var H = Math.max(1440, Math.round(end + 236));
 
     var cv = document.createElement("canvas");
     cv.width = W; cv.height = H;
     var ctx = cv.getContext("2d");
 
     var g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, "#FBFAF4"); g.addColorStop(.6, "#F2F1E7"); g.addColorStop(1, "#E8EADE");
+    g.addColorStop(0, "#FBFAF4"); g.addColorStop(.55, "#F2F1E7"); g.addColorStop(1, "#E8EADE");
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
-    var r1 = ctx.createRadialGradient(90, 240, 0, 90, 240, 560);
+    var r1 = ctx.createRadialGradient(80, 220, 0, 80, 220, 500);
     r1.addColorStop(0, "rgba(198,216,198,.5)"); r1.addColorStop(1, "rgba(198,216,198,0)");
-    ctx.fillStyle = r1; ctx.fillRect(0, 0, W, 900);
-    var r2 = ctx.createRadialGradient(1000, Math.round(H * .6), 0, 1000, Math.round(H * .6), 560);
-    r2.addColorStop(0, "rgba(212,222,200,.42)"); r2.addColorStop(1, "rgba(212,222,200,0)");
-    ctx.fillStyle = r2; ctx.fillRect(0, Math.round(H * .3), W, H);
+    ctx.fillStyle = r1; ctx.fillRect(0, 0, W, 780);
 
     function ridge(pts, alpha) {
       var step = W / (pts.length - 1);
@@ -1226,27 +1234,24 @@ const DATA = {
       ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
       ctx.fillStyle = "rgba(44,58,54," + alpha + ")"; ctx.fill();
     }
-    ridge([96, 148, 112, 168, 100, 140, 106], .1);
-    ridge([46, 86, 62, 100, 54, 80, 50], .16);
-    ridge([10, 26, 18, 32, 14, 24, 12], .26);
+    ridge([62, 96, 74, 110, 66, 92, 70], .1);
+    ridge([26, 50, 36, 58, 32, 46, 28], .15);
+    ridge([0, 14, 8, 18, 6, 12, 4], .24);
 
-    layoutCard(ctx, id, v, true);
+    layoutCard(ctx, id, v, true, s);
 
     ctx.save();
-    ctx.translate(W - 150, 210); ctx.rotate(-.04);
+    ctx.translate(W - 138, 190); ctx.rotate(-.04);
     ctx.strokeStyle = "#B08A4B"; ctx.lineWidth = 3;
-    ctx.strokeRect(-46, -46, 92, 92);
-    ctx.fillStyle = "#A67F3F"; ctx.font = '400 32px ' + SERIF; ctx.textAlign = "center";
-    ctx.fillText("仙", 0, -2); ctx.fillText("侠", 0, 33);
+    ctx.strokeRect(-40, -40, 80, 80);
+    ctx.fillStyle = "#A67F3F"; ctx.font = '400 28px ' + SERIF; ctx.textAlign = "center";
+    ctx.fillText("仙", 0, -3); ctx.fillText("侠", 0, 29);
     ctx.restore();
 
     ctx.textAlign = "left";
-    ctx.font = '400 25px ' + SANS;
-    ctx.fillStyle = "#66705F";
-    spaced(ctx, "40 道生活题 · 不用懂仙侠 · 凭直觉选", 100, H - 252, 2);
-    ctx.font = '400 24px ' + SANS;
-    ctx.fillStyle = "#414C44";
-    ctx.fillText("测一测 | 你在仙侠世界是什么身份", 100, H - 200);
+    ctx.font = '400 21px ' + SANS;
+    ctx.fillStyle = "#4B554C";
+    spaced(ctx, "测一测 | 你在仙侠世界是什么身份", 88, H - 106, 1.5);
 
     return cv.toDataURL("image/png");
   }
