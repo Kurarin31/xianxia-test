@@ -1104,7 +1104,7 @@ const DATA = {
     return lines;
   }
 
-  function layoutCard(ctx, id, draw) {
+  function layoutCard(ctx, id, v, draw) {
     var W = 1080, PAD = 100, maxW = W - PAD * 2, y = 168;
 
     ctx.font = '400 26px ' + SANS;
@@ -1154,13 +1154,50 @@ const DATA = {
     block("为什么是你", id.why);
     y += 28;
     block("隐藏特质 · 小彩蛋", id.secret);
+
+    /* 六维灵根 */
+    y += 76;
+    ctx.font = '400 26px ' + SANS;
+    if (draw) { ctx.fillStyle = "#A67F3F"; spaced(ctx, "你的六维灵根", PAD, y, 6); }
+    y += 34;
+    var trackL = PAD + 112, trackR = W - PAD - 112;
+    var midX = (trackL + trackR) / 2, halfTrack = (trackR - trackL) / 2;
+    DATA.chartAxes.forEach(function (k) {
+      var ax = AX[k], val = v[k] || 0;
+      var shown = Math.sign(val) * Math.pow(Math.abs(val), 0.78);
+      var rowY = y + 30;
+      var strong = Math.abs(val) > 0.2;
+      ctx.font = '400 27px ' + SANS;
+      ctx.textAlign = "right";
+      if (draw) { ctx.fillStyle = strong ? "#26332E" : "#8A9086"; ctx.fillText(ax.l, trackL - 24, rowY); }
+      ctx.textAlign = "left";
+      if (draw) { ctx.fillStyle = strong ? "#26332E" : "#8A9086"; ctx.fillText(ax.r, trackR + 24, rowY); }
+      if (draw) {
+        ctx.strokeStyle = "rgba(30,55,51,.2)"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(trackL, rowY - 9); ctx.lineTo(trackR, rowY - 9); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(midX, rowY - 15); ctx.lineTo(midX, rowY - 3);
+        ctx.strokeStyle = "rgba(30,55,51,.28)"; ctx.stroke();
+        var wBar = Math.abs(shown) * halfTrack;
+        if (wBar > 1) {
+          ctx.fillStyle = val >= 0 ? "#3C7A6E" : "#A98540";
+          ctx.fillRect(val >= 0 ? midX - wBar : midX, rowY - 12, wBar, 6);
+          ctx.beginPath();
+          ctx.arc(val >= 0 ? midX - wBar : midX + wBar, rowY - 9, 7, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      y += 68;
+    });
+    y += 16;
+    ctx.textAlign = "left";
     return y;
   }
 
   function buildCard(id) {
     var W = 1080;
-    var contentEnd = layoutCard(document.createElement("canvas").getContext("2d"), id, false);
-    var H = Math.max(1440, Math.round(contentEnd + 330));
+    var v = profile();
+    var contentEnd = layoutCard(document.createElement("canvas").getContext("2d"), id, v, false);
+    var H = Math.max(1440, Math.round(contentEnd + 404));
 
     var cv = document.createElement("canvas");
     cv.width = W; cv.height = H;
@@ -1189,7 +1226,7 @@ const DATA = {
     ridge([46, 86, 62, 100, 54, 80, 50], .16);
     ridge([10, 26, 18, 32, 14, 24, 12], .26);
 
-    layoutCard(ctx, id, true);
+    layoutCard(ctx, id, v, true);
 
     ctx.save();
     ctx.translate(W - 150, 210); ctx.rotate(-.04);
@@ -1205,7 +1242,7 @@ const DATA = {
     spaced(ctx, "40 道生活题 · 不用懂仙侠 · 凭直觉选", 100, H - 252, 2);
     ctx.font = '400 24px ' + SANS;
     ctx.fillStyle = "#414C44";
-    ctx.fillText(SHARE_URL ? SHARE_URL.replace(/^https?:\/\//, "").replace(/\/$/, "") : "测一测 · 你在仙侠世界是什么身份", 100, H - 200);
+    ctx.fillText("测一测 | 你在仙侠世界是什么身份", 100, H - 200);
 
     return cv.toDataURL("image/png");
   }
