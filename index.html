@@ -759,7 +759,10 @@ const DATA = {
   "use strict";
   /* 【上线前改这一行】填上你自己的网址（例如 https://xxx.vercel.app），
      复制出来的分享文案就会自动带上这个链接；留空则只复制文字，不带链接 */
-  var SHARE_URL = "https://kurarin31.github.io/xianxia-test/";
+  var SHARE_URL = "";
+  /* 【改这里】填上你的小红书昵称或店铺名：分享文案会带一句「小红书搜：xxx」，
+     把看到的人导回你的商品页；填了才有，留空则不出现这一行 */
+  var SHOP_NAME = "";
   var Q = DATA.questions, IDS = DATA.identities, AXES = DATA.axes;
   var AX = {}; AXES.forEach(function (a) { AX[a.k] = a; });
   var KEYS = ["甲", "乙", "丙", "丁"];
@@ -1010,7 +1013,8 @@ const DATA = {
     var txt = "我在仙侠世界的身份是「" + id.name + "」\n" +
       id.tag + " · " + id.slogan + "\n" +
       "你也来测一下？四十道生活题，不用懂仙侠，凭直觉选。";
-    return SHARE_URL ? txt + "\n" + SHARE_URL : txt;
+    if (SHOP_NAME) txt += "\n小红书搜：「" + SHOP_NAME + "」";
+    return txt;
   }
   function toast(msg) {
     toastEl.textContent = msg;
