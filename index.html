@@ -210,6 +210,7 @@ body{
 .axis-fill{position:absolute;top:0;height:3px;width:0;border-radius:2px;background:var(--jade);transition:width .9s cubic-bezier(.2,.8,.2,1),left .9s cubic-bezier(.2,.8,.2,1)}
 .axis-dot{position:absolute;top:-3px;width:9px;height:9px;border-radius:50%;background:var(--jade);left:50%;transition:left .9s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 0 3px rgba(60,122,110,.12)}
 .res-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:38px}
+.res-actions #btn-save{grid-column:1 / -1}
 .btn-fill{
   appearance:none;cursor:pointer;font-family:var(--serif);font-weight:700;
   background:var(--ink);color:#F6F7F1;border:1px solid var(--ink);border-radius:2px;
@@ -228,6 +229,17 @@ body{
 .btn-line:hover{background:rgba(169,133,64,.08);border-color:var(--gold)}
 .res-foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:16px}
 .res-note{margin-top:20px;font-size:11.5px;color:var(--cloud);line-height:1.7}
+
+/* ===== 结果卡弹层 ===== */
+.save-sheet{position:fixed;inset:0;z-index:40;display:none;place-items:center;
+  background:rgba(20,32,29,.74);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);padding:20px}
+.save-sheet.is-on{display:grid}
+.save-card{display:flex;flex-direction:column;gap:14px;align-items:center;max-width:100%}
+.save-tip{font-size:12.5px;color:#EFECE1;letter-spacing:.08em;margin:0}
+.save-img{display:block;max-width:min(92vw,380px);max-height:70vh;width:auto;
+  border:1px solid rgba(246,247,241,.28);box-shadow:0 26px 60px -26px rgba(0,0,0,.7)}
+.save-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(92vw,380px)}
+.save-btns .btn-line{background:rgba(246,247,241,.08);border-color:rgba(246,247,241,.34);color:#F2EFE4}
 
 /* ===== 提示条 ===== */
 .toast{
@@ -339,9 +351,21 @@ body{
     </div>
 
     <div class="res-actions">
-      <button class="btn-fill" id="btn-copy">复制这段话</button>
+      <button class="btn-fill" id="btn-save">保存图片</button>
+      <button class="btn-line" id="btn-copy">复制这段话</button>
       <button class="btn-line" id="btn-share">发给朋友</button>
     </div>
+
+  <div class="save-sheet" id="save-sheet">
+    <div class="save-card">
+      <p class="save-tip">长按图片保存到相册 · 电脑端点「下载图片」</p>
+      <img class="save-img" id="save-img" alt="仙侠身份结果卡">
+      <div class="save-btns">
+        <button class="btn-line" id="btn-download">下载图片</button>
+        <button class="btn-line" id="btn-close-save">收起</button>
+      </div>
+    </div>
+  </div>
 
     <div class="res-foot">
       <button class="link" id="btn-retest">← 再测一次</button>
@@ -1039,6 +1063,185 @@ const DATA = {
 
   document.getElementById("btn-copy").addEventListener("click", function () {
     copyText(shareText(currentIdentity()), "文案已复制，去发给朋友吧");
+  });
+
+/* ===== 结果卡图片 ===== */
+  var SERIF = '"Noto Serif SC","Songti SC","STSong",serif';
+  var SANS = '"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif';
+  var cardURL = "";
+
+  function ensureFonts() {
+    if (!document.fonts || !document.fonts.load) return Promise.resolve();
+    return Promise.all([
+      document.fonts.load('700 110px "Noto Serif SC"'),
+      document.fonts.load('400 35px "Noto Serif SC"'),
+      document.fonts.load('400 33px "Noto Sans SC"')
+    ]).catch(function () { });
+  }
+
+  function spaced(ctx, text, x, y, gap) {
+    var cx = x;
+    for (var i = 0; i < text.length; i++) {
+      ctx.fillText(text.charAt(i), cx, y);
+      cx += ctx.measureText(text.charAt(i)).width + gap;
+    }
+  }
+
+  function wrap(ctx, text, maxW) {
+    /* 中文避头尾：标点不出现在行首，开引号不留行尾 */
+    var NO_HEAD = "，。、；：！？）」』”’…·%％", NO_TAIL = "（「『“‘";
+    var lines = [], line = "";
+    for (var i = 0; i < text.length; i++) {
+      var ch = text.charAt(i);
+      if (line && ctx.measureText(line + ch).width > maxW) {
+        if (NO_HEAD.indexOf(ch) >= 0) { line += ch; lines.push(line); line = ""; continue; }
+        var last = line.charAt(line.length - 1);
+        if (NO_TAIL.indexOf(last) >= 0 && line.length > 1) { lines.push(line.slice(0, -1)); line = last + ch; continue; }
+        lines.push(line); line = ch;
+      } else { line += ch; }
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function layoutCard(ctx, id, draw) {
+    var W = 1080, PAD = 100, maxW = W - PAD * 2, y = 168;
+
+    ctx.font = '400 26px ' + SANS;
+    if (draw) { ctx.fillStyle = "rgba(92,102,92,.9)"; spaced(ctx, "仙侠身份测试", PAD, y, 7); }
+
+    y = 268;
+    if (draw) { ctx.font = '400 33px ' + SANS; ctx.fillStyle = "#7A8272"; ctx.fillText("你的本命仙侠身份", PAD, y); }
+
+    var ns = 110;
+    ctx.font = '700 ' + ns + 'px ' + SERIF;
+    while (ctx.measureText(id.name).width > maxW - 14 && ns > 44) { ns -= 4; ctx.font = '700 ' + ns + 'px ' + SERIF; }
+    var nameBase = y + 124;
+    if (draw) { ctx.fillStyle = "#1D2723"; ctx.fillText(id.name, PAD, nameBase); }
+    y = nameBase;
+
+    ctx.font = '400 33px ' + SANS;
+    if (draw) { ctx.fillStyle = "#5F695D"; ctx.fillText(id.tag, PAD, y + 58); }
+    y = y + 58;
+
+    ctx.font = '400 40px ' + SERIF;
+    var sl = wrap(ctx, "「" + id.slogan + "」", maxW - 8);
+    if (draw) {
+      ctx.fillStyle = "#3E5A50";
+      for (var i = 0; i < sl.length; i++) ctx.fillText(sl[i], PAD, y + 66 + i * 64);
+    }
+    y = y + 66 + sl.length * 64;
+
+    y += 44;
+    if (draw) {
+      ctx.strokeStyle = "rgba(30,55,51,.2)"; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(W - PAD, y); ctx.stroke();
+    }
+    y += 68;
+
+    function block(title, body) {
+      ctx.font = '400 26px ' + SANS;
+      if (draw) { ctx.fillStyle = "#A67F3F"; spaced(ctx, title, PAD, y, 6); }
+      y += 46;
+      ctx.font = '400 35px ' + SERIF;
+      var ls = wrap(ctx, body, maxW);
+      if (draw) {
+        ctx.fillStyle = "#26332E";
+        for (var j = 0; j < ls.length; j++) ctx.fillText(ls[j], PAD, y + 46 + j * 66);
+      }
+      y = y + 46 + ls.length * 66;
+    }
+    block("为什么是你", id.why);
+    y += 28;
+    block("隐藏特质 · 小彩蛋", id.secret);
+    return y;
+  }
+
+  function buildCard(id) {
+    var W = 1080;
+    var contentEnd = layoutCard(document.createElement("canvas").getContext("2d"), id, false);
+    var H = Math.max(1440, Math.round(contentEnd + 330));
+
+    var cv = document.createElement("canvas");
+    cv.width = W; cv.height = H;
+    var ctx = cv.getContext("2d");
+
+    var g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#FBFAF4"); g.addColorStop(.6, "#F2F1E7"); g.addColorStop(1, "#E8EADE");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+    var r1 = ctx.createRadialGradient(90, 240, 0, 90, 240, 560);
+    r1.addColorStop(0, "rgba(198,216,198,.5)"); r1.addColorStop(1, "rgba(198,216,198,0)");
+    ctx.fillStyle = r1; ctx.fillRect(0, 0, W, 900);
+    var r2 = ctx.createRadialGradient(1000, Math.round(H * .6), 0, 1000, Math.round(H * .6), 560);
+    r2.addColorStop(0, "rgba(212,222,200,.42)"); r2.addColorStop(1, "rgba(212,222,200,0)");
+    ctx.fillStyle = r2; ctx.fillRect(0, Math.round(H * .3), W, H);
+
+    function ridge(pts, alpha) {
+      var step = W / (pts.length - 1);
+      ctx.beginPath();
+      ctx.moveTo(0, H - pts[0]);
+      for (var i = 1; i < pts.length; i++) ctx.lineTo(Math.round(i * step), H - pts[i]);
+      ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+      ctx.fillStyle = "rgba(44,58,54," + alpha + ")"; ctx.fill();
+    }
+    ridge([96, 148, 112, 168, 100, 140, 106], .1);
+    ridge([46, 86, 62, 100, 54, 80, 50], .16);
+    ridge([10, 26, 18, 32, 14, 24, 12], .26);
+
+    layoutCard(ctx, id, true);
+
+    ctx.save();
+    ctx.translate(W - 150, 210); ctx.rotate(-.04);
+    ctx.strokeStyle = "#B08A4B"; ctx.lineWidth = 3;
+    ctx.strokeRect(-46, -46, 92, 92);
+    ctx.fillStyle = "#A67F3F"; ctx.font = '400 32px ' + SERIF; ctx.textAlign = "center";
+    ctx.fillText("仙", 0, -2); ctx.fillText("侠", 0, 33);
+    ctx.restore();
+
+    ctx.textAlign = "left";
+    ctx.font = '400 25px ' + SANS;
+    ctx.fillStyle = "#66705F";
+    spaced(ctx, "40 道生活题 · 不用懂仙侠 · 凭直觉选", 100, H - 252, 2);
+    ctx.font = '400 24px ' + SANS;
+    ctx.fillStyle = "#414C44";
+    ctx.fillText(SHARE_URL ? SHARE_URL.replace(/^https?:\/\//, "").replace(/\/$/, "") : "测一测 · 你在仙侠世界是什么身份", 100, H - 200);
+
+    return cv.toDataURL("image/png");
+  }
+
+  function openSaveSheet() {
+    var id = currentIdentity();
+    if (!id) return;
+    var btn = document.getElementById("btn-save"), img = document.getElementById("save-img");
+    btn.disabled = true; btn.textContent = "正在生成…";
+    ensureFonts().then(function () {
+      try {
+        cardURL = buildCard(id);
+        img.src = cardURL;
+        document.getElementById("save-sheet").classList.add("is-on");
+      } catch (err) {
+        toast("图片没生成出来，先截图凑一下");
+      }
+      btn.disabled = false; btn.textContent = "保存图片";
+    });
+  }
+
+  document.getElementById("btn-save").addEventListener("click", openSaveSheet);
+  document.getElementById("btn-close-save").addEventListener("click", function () {
+    document.getElementById("save-sheet").classList.remove("is-on");
+  });
+  document.getElementById("save-sheet").addEventListener("click", function (e) {
+    if (e.target === this) this.classList.remove("is-on");
+  });
+  document.getElementById("btn-download").addEventListener("click", function () {
+    var id = currentIdentity();
+    if (!cardURL) return;
+    var a = document.createElement("a");
+    a.href = cardURL;
+    a.download = "仙侠身份-" + (id ? id.name : "结果") + ".png";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    toast("已保存到下载目录");
   });
 
   document.getElementById("btn-share").addEventListener("click", function () {
